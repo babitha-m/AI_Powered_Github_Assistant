@@ -46,17 +46,33 @@ Follow these steps to run the AI-Powered GitHub Issue Assistant on your local ma
 ```bash
 git clone https://github.com/babitha-m/AI_Powered_Github_Assistant.git
 cd AI_Powered_Github_Assistant
+```
 
 ###  2. Install the required Python packages:
-pip install -r requirements.txt
+```bash pip install -r requirements.txt ```
 
 ### 3. Create a .env file in the root directory and add your OpenAI API key:
-OPENAI_API_KEY=your_openai_api_key_here
-ℹ You can optionally provide a GitHub personal access token in the UI for accessing private repositories.
+```bash OPENAI_API_KEY=your_openai_api_key_here ```
+ You can optionally provide a GitHub personal access token in the UI for accessing private repositories. 
 
 ### 4. Start the backend server using Uvicorn:
+```bash 
+cd backend
+uvicorn main:app --reload
 
+The API will be available at: http://127.0.0.1:8000
+
+Explore the API via Swagger UI: http://127.0.0.1:8000/docs
+```
+
+### 5. Run the Streamlit Frontend
+In a new terminal, navigate to the frontend directory and launch the app:
+```bash 
+cd frontend
+streamlit run app.py
+```
 ### 🔧 Prerequisites
+
 - Python 3.10+
 - OpenAI API Key
 - GitHub token (optional, for private repos)

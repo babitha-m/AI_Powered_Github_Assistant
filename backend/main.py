@@ -53,6 +53,8 @@ async def analyze_issue(payload: IssueInput, authorization: str = Header(default
     title = issue_data.get("title", "")
     body = issue_data.get("body", "")
     comments = [comment.get("body", "") for comment in comments_data]
+    if not comments:
+        comments = ["No comments found."]
 
     llm_analysis = await generate_issue_analysis(title, body, comments)
 

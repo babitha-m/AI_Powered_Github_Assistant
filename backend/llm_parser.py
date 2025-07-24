@@ -10,8 +10,33 @@ load_dotenv(dotenv_path=env_path)
 
 client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+async def summarize_text_if_needed(text: str, max_chars: int = 2000) -> str:
+    if len(text) <= max_chars:
+        return text
+
+    summarize_prompt = f"""The following GitHub issue description is too long. Please summarize it in 3-5 concise sentences, preserving key technical details and user concerns.
+
+Original Text:
+{text}
+
+Summarized Description:"""
+
+    response = await client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You summarize GitHub issue descriptions."},
+            {"role": "user", "content": summarize_prompt}
+        ],
+        temperature=0.3
+    )
+
+    return response.choices[0].message.content.strip()
+  
+  
 async def generate_issue_analysis(title: str, body: str, comments: list[str]):
-    prompt = f"""You are an expert GitHub issue assistant, the best in the industry. 
+  #Handling large textx
+  summarized_body = await summarize_text_if_needed(body)
+  prompt = f"""You are an expert GitHub issue assistant, the best in the industry. 
 There are lots of issues on GitHub repos and it is important for you to understand the issues as a GitHub issue assistant.
 
 Your task is to analyze a GitHub issue in depth and understand the core of the issue in order to come to a conclusion.
@@ -60,7 +85,7 @@ Ensure the output is valid JSON. Do not include any extra explanation. Only retu
 Return the output clearly and concisely.
 """
 
-    response = await client.chat.completions.create(
+  response = await client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": "You are a helpful GitHub issue analyst."},
@@ -70,4 +95,4 @@ Return the output clearly and concisely.
     )
 
     #Parsing the JSON Content
-    return json.loads(response.choices[0].message.content)
+  return json.loads(response.choices[0].message.content)

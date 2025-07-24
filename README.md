@@ -1,31 +1,63 @@
-# AI_Powered_Github_Assistant
-This system acts as a Github Issue assistant and provides a summarised issue analysis given the repo and the issue number.
-Major Components:
-1.  LLM-Powered Backend (FastAPI):
-Purpose: Acts as the core engine that fetches, processes, and analyzes GitHub issue data.
+# 🧠 AI-Powered GitHub Issue Assistant
 
-Key Files:
+This project analyzes GitHub issues using OpenAI's language models to generate structured summaries, helping developers quickly understand and triage issues.
 
-main.py: Exposes a FastAPI endpoint (/analyze_issue) that takes repo URL, issue number, and optional token.
+---
 
-github_fetch.py: Fetches issue title, body, and comments from GitHub using httpx.
+## 🚀 Features
 
-llm_parser.py: Sends the combined text to OpenAI to generate a structured summary in the form of json.
+- 🔍 Analyzes GitHub issues using LLMs
+- 🧠 Returns structured JSON summaries (summary, type, priority, labels, impact)
+- 🖥️ Simple Streamlit UI for input and visualization
+- 🔐 Supports optional GitHub token for private repositories
 
-2.  Frontend UI (Streamlit):
-Purpose: Simple user interface for entering GitHub repo name and issue number and viewing AI-generated output.
+---
 
-Key Features:
+## 🧩 Architecture Overview
 
-Input fields: repo URL, issue number, and optional GitHub token.
+### 1. **Backend (FastAPI + OpenAI)**
+Handles core logic: fetches GitHub issue data, processes it using OpenAI, and returns structured output.
 
-Submit button with loading spinner animation.
+- **`main.py`** – FastAPI endpoint: `/analyze_issue`
+- **`github_fetch.py`** – Fetches issue title, body, and comments
+- **`llm_parser.py`** – Sends content to OpenAI and parses the response
 
-Displays AI-generated output in JSON-like code block.
+### 2. **Frontend (Streamlit)**
+User-facing interface to input GitHub repo info and view AI-generated summaries.
 
-File: frontend/app.py
+- **`frontend/app.py`**
+  - Inputs: GitHub repo URL, issue number, optional token
+  - Loading spinner during analysis
+  - JSON-style output display
 
-3. API Communication:
-Streamlit frontend sends a POST request to FastAPI backend using httpx.
+### 3. **API Communication**
+- Streamlit sends a `POST` request to the FastAPI server
+- FastAPI:
+  - Fetches the issue + comments
+  - Sends to OpenAI
+  - Returns structured analysis
 
-Backend processes the issue and returns a response.
+---
+
+## 🛠️ Installation & Running Locally
+Follow these steps to run the AI-Powered GitHub Issue Assistant on your local machine:
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/babitha-m/AI_Powered_Github_Assistant.git
+cd AI_Powered_Github_Assistant
+
+###  2. Install the required Python packages:
+pip install -r requirements.txt
+
+### 3. Create a .env file in the root directory and add your OpenAI API key:
+OPENAI_API_KEY=your_openai_api_key_here
+ℹ You can optionally provide a GitHub personal access token in the UI for accessing private repositories.
+
+### 4. Start the backend server using Uvicorn:
+
+### 🔧 Prerequisites
+- Python 3.10+
+- OpenAI API Key
+- GitHub token (optional, for private repos)
+

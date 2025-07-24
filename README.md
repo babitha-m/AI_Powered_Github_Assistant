@@ -1,19 +1,19 @@
-# 🧠 AI-Powered GitHub Issue Assistant
+#  AI-Powered GitHub Issue Assistant
 
 This project analyzes GitHub issues using OpenAI's language models to generate structured summaries, helping developers quickly understand and triage issues.
 
 ---
 
-## 🚀 Features
+##  Features
 
-- 🔍 Analyzes GitHub issues using LLMs
-- 🧠 Returns structured JSON summaries (summary, type, priority, labels, impact)
-- 🖥️ Simple Streamlit UI for input and visualization
-- 🔐 Supports optional GitHub token for private repositories
+-  Analyzes GitHub issues using LLMs
+-  Returns structured JSON summaries (summary, type, priority, labels, impact)
+-  Simple Streamlit UI for input and visualization
+-  Supports optional GitHub token for private repositories
 
 ---
 
-## 🧩 Architecture Overview
+##  Architecture Overview
 
 ### 1. **Backend (FastAPI + OpenAI)**
 Handles core logic: fetches GitHub issue data, processes it using OpenAI, and returns structured output.
@@ -39,7 +39,7 @@ User-facing interface to input GitHub repo info and view AI-generated summaries.
 
 ---
 
-## 🛠️ Installation & Running Locally
+##  Installation & Running Locally
 Follow these steps to run the AI-Powered GitHub Issue Assistant on your local machine:
 ### 1. Clone the Repository
 

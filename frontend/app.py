@@ -5,15 +5,15 @@ import json
 # Set FastAPI backend URL
 BACKEND_URL = "http://localhost:8000/analyze_issue"
 
-st.set_page_config(page_title="🧠 GitHub Issue Assistant", layout="centered")
+st.set_page_config(page_title=" GitHub Issue Assistant", layout="centered")
 
-st.title("🧠 GitHub Issue Assistant")
+st.title(" GitHub Issue Assistant")
 st.write("Analyze GitHub issues using LLM-powered backend.")
 
 # Input form
 with st.form("issue_form"):
-    repo_url = st.text_input("🔗 GitHub Repository URL", placeholder="e.g., https://github.com/facebook/react")
-    issue_number = st.number_input("🐞 Issue Number", min_value=1, step=1)
+    repo_url = st.text_input(" GitHub Repository URL", placeholder="e.g., https://github.com/facebook/react")
+    issue_number = st.number_input(" Issue Number", min_value=1, step=1)
     submit_button = st.form_submit_button("Analyze")
 
 # When the form is submitted
@@ -28,9 +28,9 @@ if submit_button:
                 data = response.json()
 
                 if "error" in data:
-                    st.error(f"❌ Error: {data['error']}")
+                    st.error(f" Error: {data['error']}")
                 else:
-                    st.subheader("🎯 LLM Analysis Summary")
+                    st.subheader(" LLM Analysis Summary")
                     
                     
                     llm_data = data["llm_analysis"]
@@ -41,7 +41,7 @@ if submit_button:
                     st.markdown("**Suggested Labels:** " + ", ".join(f"`{label}`" for label in llm_data["suggested_labels"]))
                     st.markdown(f"**Potential Impact:** {llm_data['potential_impact']}")
 
-                    with st.expander("📝 Raw Issue Content"):
+                    with st.expander(" Raw Issue Content"):
                         st.markdown(f"**Title:** {data['title']}")
                         st.markdown(f"**Body:**\n{data['body']}")
                         if data["comments"]:

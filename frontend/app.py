@@ -14,6 +14,7 @@ st.write("Analyze GitHub issues using LLM-powered backend.")
 with st.form("issue_form"):
     repo_url = st.text_input(" GitHub Repository URL", placeholder="e.g., https://github.com/facebook/react")
     issue_number = st.number_input(" Issue Number", min_value=1, step=1)
+    token = st.text_input(" GitHub Token (Optional)", type="password")
     submit_button = st.form_submit_button("Analyze")
 
 # When the form is submitted
@@ -24,7 +25,12 @@ if submit_button:
         with st.spinner("Analyzing issue..."):
             try:
                 payload = {"repo_url": repo_url, "issue_number": issue_number}
-                response = requests.post(BACKEND_URL, json=payload)
+                headers = {}
+
+                if token:
+                    headers["Authorization"] = f"Bearer {token}"
+
+                response = requests.post(BACKEND_URL, json=payload, headers=headers)
                 data = response.json()
 
                 if "error" in data:

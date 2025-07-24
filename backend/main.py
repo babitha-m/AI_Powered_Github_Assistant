@@ -1,8 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from urllib.parse import urlparse
-
 from github_fetch import fetch_github_issue
 from llm_parser import generate_issue_analysis
 
@@ -36,13 +35,18 @@ async def root():
 
 #Triggering analysis
 @app.post("/analyze_issue")
-async def analyze_issue(payload: IssueInput):
+async def analyze_issue(payload: IssueInput, authorization: str = Header(default=None)):
     owner, repo = parse_url(payload.repo_url)  #Getting owner and repo details from url
     if not owner or not repo:
         return {"error": "Invalid GitHub repository URL"}
+    
+    #Token if needed
+    token = None
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.removeprefix("Bearer ").strip()
 
     try:
-        issue_data, comments_data = await fetch_github_issue(owner, repo, payload.issue_number)
+        issue_data, comments_data = await fetch_github_issue(owner, repo, payload.issue_number,token=token)
     except ValueError as e:
         return {"error": str(e)}
 

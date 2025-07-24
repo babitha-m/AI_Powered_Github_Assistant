@@ -1,11 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import httpx
 from urllib.parse import urlparse
 
+from github_fetch import fetch_github_issue
+from llm_parser import generate_issue_analysis
+
+#Web Server using FastAPI
 app = FastAPI()
 
+#Middleware for communication between backend and frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -13,51 +17,44 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Define the request body schema
+#Request Body Schema
 class IssueInput(BaseModel):
     repo_url: str
     issue_number: int
 
-#Function to parse URL and get the details of the owner and repo
+#Parsing the URL
 def parse_url(repo_url: str):
-    """
-    Extracts owner and repo name from a URL like https://github.com/facebook/react
-    """
     path_parts = urlparse(repo_url).path.strip("/").split("/")
     if len(path_parts) >= 2:
-        return path_parts[0], path_parts[1]  # owner, repo
+        return path_parts[0], path_parts[1]
     return None, None
 
-# Root endpoint to check if its working
+#Checking if its woriking
 @app.get("/")
 async def root():
     return {"message": "GitHub Issue Assistant is running"}
 
-# POST endpoint with correct body model
+#Triggering analysis
 @app.post("/analyze_issue")
 async def analyze_issue(payload: IssueInput):
-    owner, repo = parse_url(payload.repo_url) #parsing url
-    issue_number = payload.issue_number       #issune number is given directly
-
+    owner, repo = parse_url(payload.repo_url)  #Getting owner and repo details from url
     if not owner or not repo:
         return {"error": "Invalid GitHub repository URL"}
 
-    #Using GitHub API to fetch the data
-    issue_url = f"https://api.github.com/repos/{owner}/{repo}/issues/{issue_number}"    
-    comments_url = f"https://api.github.com/repos/{owner}/{repo}/issues/{issue_number}/comments"
+    try:
+        issue_data, comments_data = await fetch_github_issue(owner, repo, payload.issue_number)
+    except ValueError as e:
+        return {"error": str(e)}
 
-    async with httpx.AsyncClient() as client:
-        issue_res = await client.get(issue_url)
-        comments_res = await client.get(comments_url)
+    title = issue_data.get("title", "")
+    body = issue_data.get("body", "")
+    comments = [comment.get("body", "") for comment in comments_data]
 
-    if issue_res.status_code != 200:
-        return {"error": f"Issue not found or error fetching issue: {issue_res.text}"}
-
-    issue_data = issue_res.json()
-    comments_data = comments_res.json()
+    llm_analysis = await generate_issue_analysis(title, body, comments)
 
     return {
-        "title": issue_data.get("title"),
-        "body": issue_data.get("body"),
-        "comments": [c["body"] for c in comments_data],
+        "title": title,
+        "body": body,
+        "comments": comments,
+        "llm_analysis": llm_analysis,
     }
